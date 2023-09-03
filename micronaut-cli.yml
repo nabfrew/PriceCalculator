@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.demo
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [ app-name, cassandra, http-client-test, java, java-application, junit, log4j2, management, maven, maven-enforcer-plugin, micronaut-aot, netty-server, openapi, properties, readme, security, security-annotations, serialization-jackson, shade, test-resources ]
