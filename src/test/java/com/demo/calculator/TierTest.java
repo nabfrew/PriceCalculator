@@ -17,13 +17,13 @@ class TierTest {
         var querieDateRange = createDateRange(100);
 
         var datesApplied = List.of(createDateRange(numberOfDays));
-        var tier = new Tier(pricePerDay, datesApplied, new ArrayList<>());
+        var tier = new Tier(pricePerDay, datesApplied, new ArrayList<>(), true);
 
         assertEquals(numberOfDays * pricePerDay, tier.calculateTotalPrice(querieDateRange));
     }
 
     @Test
-    void testSingelDateRangeAndDiscountFullyWithinQuery() {
+    void testSingleDateRangeAndDiscountFullyWithinQuery() {
         var numberOfDays = 5;
         var pricePerDay = 10;
         var discountedDays = 2;
@@ -31,10 +31,9 @@ class TierTest {
         var querieDateRange = createDateRange(100);
 
         var discount = new Discount(discountRate, List.of(createDateRange(discountedDays)));
-
         var datesApplied  = List.of(createDateRange(numberOfDays));
 
-        var tier = new Tier(pricePerDay, datesApplied, List.of(discount));
+        var tier = new Tier(pricePerDay, datesApplied, List.of(discount), true);
 
         var expectedPrice = (numberOfDays - discountedDays) * pricePerDay + discountedDays * pricePerDay * discountRate;
 
@@ -49,6 +48,6 @@ class TierTest {
     }
 
     private static DateRange createDateRange(LocalDate start, int numberOfDays) {
-        return new DateRange(start, start.plusDays(numberOfDays));
+        return new DateRange(start, start.plusDays(numberOfDays - 1)); // -1 because date ranges are inclusive on both ends.
     }
 }

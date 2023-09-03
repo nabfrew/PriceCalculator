@@ -8,14 +8,16 @@ import java.util.stream.Collectors;
 import static com.demo.calculator.DateRange.getFlattenedDateList;
 
 public class Tier {
-    private final float price;
+    private final double price;
+    private final boolean appliesOnWeekends;
     private List<DateRange> datesApplied;
     private List<Discount> discountsApplied;
 
-    public Tier(float price, List<DateRange> datesApplied, List<Discount> discountsApplied) {
+    public Tier(double price, List<DateRange> datesApplied, List<Discount> discountsApplied, boolean appliesWeekends) {
         this.price = price;
         this.datesApplied = datesApplied;
         this.discountsApplied = discountsApplied;
+        this.appliesOnWeekends = appliesWeekends;
     }
 
     /**
@@ -37,29 +39,34 @@ public class Tier {
     public double calculateTotalPrice(DateRange queriedRange) {
         var totalPrice = 0.0;
 
+        limitToDatesToQueryRange(queriedRange);
+
+        var keyDates = flattenedDateList();
+
+        for (int i = 0, keyDatesSize = keyDates.size() - 1; i < keyDatesSize; i++) {
+            var range = new DateRange(keyDates.get(i), keyDates.get(i + 1).minusDays(1));
+            if (datesApplied.stream().anyMatch(range::isWithin)) {
+
+                var discountsInRange = discountsApplied.stream().filter(discount -> discount.appliesToRange(range))
+                        .map(Discount::getDiscountRate).toList();
+
+                var numberOfDays = appliesOnWeekends ? range.getDays() : range.getWeekdays();
+
+                totalPrice += calculateEffectiveDiscount(discountsInRange) * price * numberOfDays;
+            }
+        }
+
+        return totalPrice;
+    }
+
+    private void limitToDatesToQueryRange(DateRange queriedRange) {
         // Limit the dates for the tiers and discounts to only withing the relevant range.
+        // Probably a bit overengineer-y, but helps  time complexity if things get big.
         datesApplied = datesApplied.stream().filter(dateRange -> dateRange.hasOverlap(queriedRange))
                 .map(range -> range.getLimitedRange(queriedRange)).toList();
         discountsApplied = discountsApplied.stream().filter(discount -> discount.hasOverlap(queriedRange))
                 .map(discount -> discount.getRangeLimitedDiscount(queriedRange))
                 .collect(Collectors.toList());
-
-        var keyDates = flattenedDateList();
-
-        for (int i = 0, keyDatesSize = keyDates.size() - 1; i < keyDatesSize; i++) {
-            var range = new DateRange(keyDates.get(i), keyDates.get(i + 1));
-            if (datesApplied.stream().anyMatch(range::isWithin)) {
-
-                // Assuming that in case of multiple discounts applied, they
-                var discountsInRange = discountsApplied.stream().filter(discount -> discount.appliesToRange(range))
-                        .map(Discount::getDiscountRate).toList();
-
-
-                totalPrice += calculateEffectiveDiscount(discountsInRange) * price * range.getDays();
-            }
-        }
-
-        return totalPrice;
     }
 
     /**
@@ -75,6 +82,6 @@ public class Tier {
     private List<LocalDate> flattenedDateList() {
         var dates = getFlattenedDateList(datesApplied);
         dates.addAll(discountsApplied.stream().flatMap(discount -> discount.flattenedDates().stream()).toList());
-        return dates.stream().sorted().toList();
+        return dates.stream().sorted().distinct().toList();
     }
 }
