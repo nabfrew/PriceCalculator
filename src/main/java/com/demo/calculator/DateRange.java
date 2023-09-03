@@ -70,15 +70,16 @@ public record DateRange(LocalDate start, LocalDate end) {
 
         var days = DAYS.between(start, end) + 1;
         var fullWeeks = days / 7;
+
+        // Work out how many of the days that don't fit into a full week are weekdays.
         var strayDays = days % 7;
         var weekdayStrays = 0;
         var dayOfWeek = start.getDayOfWeek().getValue();
-
-
         for (int i = 1 ; i <= strayDays; i++) {
             if (dayOfWeek != 6 && dayOfWeek != 7) {
                 weekdayStrays++;
             }
+            // modular arithmetic magic to ensure it loops back to Monday (1) after Sunday (7)
             dayOfWeek = (dayOfWeek % 7) + 1;
         }
 

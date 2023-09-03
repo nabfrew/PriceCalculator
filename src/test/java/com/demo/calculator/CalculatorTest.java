@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorTest {
 
-    private double TIER_A_PRICE = 0.2;
-    private double TIER_B_PRICE = 0.24;
-    private double TIER_C_PRICE = 0.4;
+    private final double TIER_A_PRICE = 0.2;
+    private final double TIER_B_PRICE = 0.24;
+    private final double TIER_C_PRICE = 0.4;
 
     /**
      * Test case as specified in task:
@@ -42,6 +42,49 @@ class CalculatorTest {
 
         // Check that final result is correct.
         var price = Calculator.price(List.of(tierA, tierC), querieDateRange);
-        assertEquals(6.16, price);
+        assertEquals(6.16, price, 1e-4);
+    }
+
+    /**
+     * Test case as specified in task:
+     * <p>
+     * Customer Y started using Service B and Service C 2018-01-01. Customer Y
+     * had 200 free days and a discount of 30% for the rest of the time. What
+     * is the total price for Customer Y up until 2019-10-01?
+     * <p>
+     * According to Wolfram Alpha:
+     * 143 weekdays from start + 199 days (not counting 1st twice)
+     * 30% discount runs from 2018-07-20 onwards. 313 weekdays, 439 days
+     * Tier B : 0.24 * 313 *0.7 = 52.584
+     * Tier C : 0.4 * 439 *0.7 = 122.92
+     *
+     */
+    @Test
+    void testCase2() {
+        var startDate = LocalDate.of(2018, 1, 1);
+        var querieDateRange = new DateRange(startDate, LocalDate.of(2019, 10, 1));
+
+        var freePeriod = 200;
+        var discountRate = 0.7;
+        var discountDays = 439;
+        var discountWeekdays = 313;
+        var expectedTierB = discountRate * discountWeekdays * TIER_B_PRICE;
+        var expectedTierC = discountRate * discountDays * TIER_C_PRICE;
+
+
+        var discountFree = new Discount(0, List.of(new DateRange(startDate, startDate.plusDays(freePeriod - 1)))); // -1 because first day is included.
+        var discount30 = new Discount(0.7, List.of(new DateRange(startDate.plusDays(freePeriod), null)));
+        var discountList = List.of(discountFree, discount30);
+
+        var tierB = new Tier(TIER_B_PRICE, List.of(new DateRange(startDate, null)), discountList, false);
+        var tierC = new Tier(TIER_C_PRICE, List.of(new DateRange(startDate, null)), discountList, true);
+
+        // Check that the tiers are calculated correctly individually.
+        assertEquals(expectedTierB, tierB.calculateTotalPrice(querieDateRange), 1e-4, String.format("%s\t", expectedTierB - tierB.calculateTotalPrice(querieDateRange) ));
+        assertEquals(expectedTierC, tierC.calculateTotalPrice(querieDateRange), 1e-4, String.format("%s\t", expectedTierC - tierC.calculateTotalPrice(querieDateRange) ));
+
+        // Check that final result is correct.
+        var price = Calculator.price(List.of(tierB, tierC), querieDateRange);
+        assertEquals(expectedTierB + expectedTierC, price, 1e-4, String.format("%s", 161.392 -price));
     }
 }
