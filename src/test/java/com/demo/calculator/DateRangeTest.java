@@ -16,6 +16,13 @@ class DateRangeTest {
     }
 
     @Test
+    void testGetWeekdays_FridayToTuesdayAfterNext() {
+        LocalDate startDate = LocalDate.of(1, 1, 5); // Monday
+        LocalDate endDate = LocalDate.of(1, 1, 16);
+        assertEquals(8, new DateRange(startDate, endDate).getWeekdays());
+    }
+
+    @Test
     void testGetWeekdays_SameWeekend() {
         LocalDate startDate = LocalDate.of(1, 1, 6); // Saturday
         LocalDate endDate = LocalDate.of(1, 1, 6);
