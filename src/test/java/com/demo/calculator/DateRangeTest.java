@@ -1,5 +1,6 @@
 package com.demo.calculator;
 
+import com.demo.model.DateRange;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

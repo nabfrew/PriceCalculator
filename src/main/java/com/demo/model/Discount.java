@@ -1,10 +1,10 @@
-package com.demo.calculator;
+package com.demo.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.demo.calculator.DateRange.getFlattenedDateList;
+import static com.demo.model.DateRange.getFlattenedDateList;
 
 public class Discount {
     private final double discountRate; // It's easiest in the calculation to have a fraction to multiply by than % discount.

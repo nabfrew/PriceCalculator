@@ -1,5 +1,8 @@
 package com.demo.calculator;
 
+import com.demo.model.DateRange;
+import com.demo.model.Discount;
+import com.demo.model.Tier;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

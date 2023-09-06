@@ -1,4 +1,4 @@
-package com.demo.calculator;
+package com.demo.model;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;

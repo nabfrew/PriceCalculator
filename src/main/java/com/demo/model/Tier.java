@@ -1,11 +1,11 @@
-package com.demo.calculator;
+package com.demo.model;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.demo.calculator.DateRange.getFlattenedDateList;
+import static com.demo.model.DateRange.getFlattenedDateList;
 
 public class Tier {
     private final double price;

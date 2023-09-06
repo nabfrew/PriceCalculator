@@ -1,5 +1,8 @@
 package com.demo.calculator;
 
+import com.demo.model.DateRange;
+import com.demo.model.Tier;
+
 import java.util.List;
 
 public class Calculator {
