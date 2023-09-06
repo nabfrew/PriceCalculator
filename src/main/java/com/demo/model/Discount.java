@@ -1,10 +1,10 @@
 package com.demo.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import static com.demo.model.DateRange.getFlattenedDateList;
+import static com.demo.model.DateRange.getKeyDatesList;
 
 public class Discount {
     private final double discountRate; // It's easiest in the calculation to have a fraction to multiply by than % discount.
@@ -15,8 +15,9 @@ public class Discount {
         this.datesApplied = datesApplied;
     }
 
-    public Discount(float discountRate) {
-        this(discountRate, new ArrayList<>());
+    public Discount(double discountRate, DateRange datesApplied) {
+        this.discountRate = discountRate;
+        this.datesApplied = List.of(datesApplied);
     }
 
     public Discount getRangeLimitedDiscount(DateRange queriedRange) {
@@ -30,8 +31,8 @@ public class Discount {
         return discountRate;
     }
 
-    Collection<LocalDate> flattenedDates() {
-        return getFlattenedDateList(datesApplied);
+    Collection<LocalDate> keyDates() {
+        return getKeyDatesList(datesApplied);
     }
 
     public boolean appliesToRange(DateRange range) {

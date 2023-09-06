@@ -1,11 +1,12 @@
 package com.demo.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.demo.model.DateRange.getFlattenedDateList;
+import static com.demo.model.DateRange.getKeyDatesList;
 
 public class Tier {
     private final double price;
@@ -18,6 +19,16 @@ public class Tier {
         this.datesApplied = datesApplied;
         this.discountsApplied = discountsApplied;
         this.appliesOnWeekends = appliesWeekends;
+    }
+
+    public Tier(double price, DateRange datesApplied, Discount discountApplied, boolean appliesWeekends) {
+        this.price = price;
+        this.datesApplied = List.of(datesApplied);
+        this.appliesOnWeekends = appliesWeekends;
+
+        var discountsList = new ArrayList<Discount>(); // Needs this List initialisation to be mutable
+        discountsList.add(discountApplied);
+        this.discountsApplied = discountsList;
     }
 
     /**
@@ -41,7 +52,7 @@ public class Tier {
 
         limitToDatesToQueryRange(queriedRange);
 
-        var keyDates = flattenedDateList();
+        var keyDates = keyDateList();
 
         for (int i = 0, keyDatesSize = keyDates.size() - 1; i < keyDatesSize; i++) {
             var range = new DateRange(keyDates.get(i), keyDates.get(i + 1).minusDays(1));
@@ -79,9 +90,9 @@ public class Tier {
     /**
      * Gets a chronological list of all cases where there is a change in the effective price.
      */
-    private List<LocalDate> flattenedDateList() {
-        var dates = getFlattenedDateList(datesApplied);
-        dates.addAll(discountsApplied.stream().flatMap(discount -> discount.flattenedDates().stream()).toList());
+    private List<LocalDate> keyDateList() {
+        var dates = getKeyDatesList(datesApplied);
+        dates.addAll(discountsApplied.stream().flatMap(discount -> discount.keyDates().stream()).toList());
         return dates.stream().sorted().distinct().toList();
     }
 }

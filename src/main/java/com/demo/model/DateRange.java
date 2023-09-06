@@ -37,11 +37,15 @@ public record DateRange(LocalDate start, LocalDate end) {
         return new DateRange(overlapStart(limitingRange), overlapEnd(limitingRange));
     }
 
-    static Collection<LocalDate> getFlattenedDateList(Collection<DateRange> dateRangeList) {
+    /**
+     * Extracts all the dates where a change occurs in applied prices. As all date ranges are inclusive the start and
+     * end, dates of changes are ON the start day, and the day AFTER the end date, so +1 is added to all end dates.
+     */
+    static Collection<LocalDate> getKeyDatesList(Collection<DateRange> dateRangeList) {
         var list = new ArrayList<LocalDate>();
         dateRangeList.forEach(dateRange -> {
             list.add(dateRange.start);
-            list.add(dateRange.end.plusDays(1)); // Add one because the effect applies to the end date.
+            list.add(dateRange.end.plusDays(1));
         });
         return list;
     }
@@ -61,8 +65,8 @@ public record DateRange(LocalDate start, LocalDate end) {
      */
     public long getWeekdays() {
 
-        var days = DAYS.between(start, end) + 1;
-        var fullWeeks = days / 7;
+        var days = getDays();
+        var fullWeeks = days / 7; // Truncates because days is long.
 
         // Work out how many of the days that don't fit into a full week are weekdays.
         var strayDays = days % 7;
