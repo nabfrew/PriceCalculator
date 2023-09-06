@@ -18,13 +18,6 @@ public record DateRange(LocalDate start, LocalDate end) {
         }
     }
 
-    public long overlappingDays(DateRange otherRange) {
-        if (hasOverlap(otherRange)) {
-            return 0;
-        }
-        return overlapStart(otherRange).until(overlapStart(otherRange)).getDays();
-    }
-
     boolean hasOverlap(DateRange otherRange) {
         return !otherRange.start.isAfter(end) && !otherRange.end.isBefore(start);
     }
