@@ -8,7 +8,6 @@ The actual price calculation seems pretty solid, based on my testing.
 I was going to try some new database, cassandra, but decided it wasn't a great choice for this use, and reverted to what I know a bit better, postgres.
 
 ### todo
-- Make the liquibase migration work. - something amiss with the pom file atm.
 - Check that the schema makes sense.
 - Make model classes line up with schema.
 - Make bindings to model classes work.
