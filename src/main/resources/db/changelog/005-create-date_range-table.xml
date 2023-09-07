@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="create-date_range-table" author="author">
+        <!-- three identical tables referencing discount, tier and free days
+                It's not super elegant, but I wanted to keep it simple with 1-to-1
+                or adding complexity to the logic down the line, e.g. which column is not null -->
+        <createTable tableName="tier_date_range">
+            <column name="tier_date_range_id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date_range" type="daterange"/>
+            <column name="tier_id" type="INT">
+                <constraints foreignKeyName="fk_tier_date_range_tier" references="tier(tier_id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="discount_date_range">
+            <column name="discount_date_range_id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date_range" type="daterange"/>
+            <column name="discount_id" type="INT">
+                <constraints foreignKeyName="fk_discount_date_range_discount" references="discount(discount_id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="free_days_date_range">
+            <column name="free_days_date_range_id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date_range" type="daterange"/>
+            <column name="free_days_id" type="INT">
+                <constraints foreignKeyName="fk_free_days_date_range_free_days" references="free_days(free_days_id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="create-tier-table" author="author">
+        <createTable tableName="tier">
+            <column name="tier_id" type="SERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_id" type="INT">
+                <constraints foreignKeyName="fk_tier_customer" references="customer(customer_id)"/>
+            </column>
+            <column name="price" type="DOUBLE PRECISION"/>
+            <column name="applies_on_weekends" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

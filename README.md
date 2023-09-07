@@ -1,3 +1,29 @@
+# Price calculator microservice.
+
+To get the price:
+GET [base-url]/calculate?customerId=[customerId]&startDate=[yyyy/mm/dd]&endDate=[yyyy/mm/dd]
+
+## WIP:
+The actual price calculation seems pretty solid, based on my testing.
+I was going to try some new database, cassandra, but decided it wasn't a great choice for this use, and reverted to what I know a bit better, postgres.
+
+### todo
+- Make the liquibase migration work. - something amiss with the pom file atm.
+- Check that the schema makes sense.
+- Make model classes line up with schema.
+- Make bindings to model classes work.
+- Implement dao.
+- Test db framework?
+- Implement controller using dao.
+- logging, observability
+- security
+
+### Future work (That I will probably never do)
+- stick in a container, deploy and all that.
+- In the spirit of microservices split up db and calculation into separate services?
+
+# Template generated stuff below. Some is probably bloat that I should remove.
+
 ## Micronaut 4.1.0 Documentation
 
 - [User Guide](https://docs.micronaut.io/4.1.0/guide/index.html)

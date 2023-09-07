@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <!-- Create Customer Table -->
+    <include file="changelog/001-create-customer-table.xml" relativeToChangelogFile="true"/>
+
+    <!-- Create Tier Table -->
+    <include file="changelog/002-create-tier-table.xml" relativeToChangelogFile="true"/>
+
+    <!-- Create Discount Table -->
+    <include file="changelog/003-create-discount-table.xml" relativeToChangelogFile="true"/>
+
+    <!-- Create FreeDays Table -->
+    <include file="changelog/004-create-free_days-table.xml" relativeToChangelogFile="true"/>
+
+    <!-- Create DateRange Table -->
+    <include file="changelog/005-create-date_range-table.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
