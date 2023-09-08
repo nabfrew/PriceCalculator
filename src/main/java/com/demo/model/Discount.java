@@ -1,6 +1,5 @@
 package com.demo.model;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class Discount {
 
     public Discount(double discountRate, Collection<DateRange> datesApplied) {
         this.discountRate = discountRate;
-        this.datesApplied = datesApplied;
+        this.datesApplied = datesApplied.stream().sorted(DateRange::sortByEndDescendingComparator).toList();
     }
 
     public Discount(double discountRate, DateRange datesApplied) {
@@ -31,12 +30,21 @@ public class Discount {
         return discountRate;
     }
 
-    Collection<LocalDate> keyDates() {
+    Collection<Long> keyDates() {
         return getKeyDatesList(datesApplied);
     }
 
     public boolean appliesToRange(DateRange range) {
-        return datesApplied.stream().anyMatch(range::isWithin);
+        for (DateRange dateRange : datesApplied) {
+            if (dateRange.end() <= range.start()) {
+                // We can do this because discount dates are sorted by end descending.
+                break;
+            }
+            if (range.isWithin(dateRange)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean hasOverlap(DateRange otherRange) {

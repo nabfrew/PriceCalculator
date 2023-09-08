@@ -1,6 +1,5 @@
 package com.demo.model;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +15,7 @@ public class Tier {
 
     public Tier(double price, List<DateRange> datesApplied, List<Discount> discountsApplied, boolean appliesWeekends) {
         this.price = price;
-        this.datesApplied = datesApplied;
+        this.datesApplied = datesApplied.stream().sorted().toList();
         this.discountsApplied = discountsApplied;
         this.appliesOnWeekends = appliesWeekends;
     }
@@ -39,6 +38,15 @@ public class Tier {
     }
 
     /**
+     * The more brute-force version of just checking each day might actually scale better.
+     */
+    public void alternativeVersion(DateRange queryRange) {
+        //var lastRelevantDate = datesApplied.stream().sorted((d1, d2) -> d1.end().isAfter(d2.end()))
+        //queryRange.start().datesUntil(queryRange.end().plusDays(queryRange.end() == LocalDate.MAX ? 0, 1))
+    }
+
+
+    /**
      * Gets the total cost for the tier, accounting for discounts.
      * It's not specified in the task if multiple discounts can be applied.
      * Here, I am assuming they can - this complicates the calculation by a
@@ -55,7 +63,7 @@ public class Tier {
         var keyDates = keyDateList();
 
         for (int i = 0, keyDatesSize = keyDates.size() - 1; i < keyDatesSize; i++) {
-            var range = new DateRange(keyDates.get(i), keyDates.get(i + 1).minusDays(1));
+            var range = new DateRange(keyDates.get(i), keyDates.get(i + 1)- 1);
             if (datesApplied.stream().anyMatch(range::isWithin)) {
 
                 var discountsInRange = discountsApplied.stream().filter(discount -> discount.appliesToRange(range))
@@ -90,7 +98,7 @@ public class Tier {
     /**
      * Gets a chronological list of all cases where there is a change in the effective price.
      */
-    private List<LocalDate> keyDateList() {
+    private List<Long> keyDateList() {
         var dates = getKeyDatesList(datesApplied);
         dates.addAll(discountsApplied.stream().flatMap(discount -> discount.keyDates().stream()).toList());
         return dates.stream().sorted().distinct().toList();

@@ -80,7 +80,7 @@ class DateRangeTest {
         var flattenedList = getKeyDatesList(List.of(new DateRange(date1, date1)));
 
         // Change applied after the single-day range.
-        assertEquals(List.of(date1, date1.plusDays(1)), flattenedList);
+        assertEquals(List.of(date1.toEpochDay(), date1.plusDays(1).toEpochDay()), flattenedList);
     }
 
     @Test
@@ -96,6 +96,6 @@ class DateRangeTest {
         var flattenedList = getKeyDatesList(List.of(range1, range2));
 
         // Duplicates get removed later.
-        assertEquals(List.of(date1, date3, date3, date3.plusDays(1)), flattenedList);
+        assertEquals(List.of(date1.toEpochDay(), date3.toEpochDay(), date3.toEpochDay(), date3.plusDays(1).toEpochDay()), flattenedList);
     }
 }
