@@ -11,11 +11,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.demo.model.DateRange.getKeyDatesList;
 
 @Entity
 @Table(name = "tier")
@@ -45,7 +41,7 @@ public class Tier {
 
     public Tier(double price, List<DateRange> datesApplied, List<Discount> discountsApplied, boolean appliesWeekends) {
         this.price = price;
-        this.datesApplied = datesApplied.stream().sorted().toList();
+        this.datesApplied = datesApplied;
         this.discountList = discountsApplied;
         this.appliesOnWeekends = appliesWeekends;
     }
@@ -67,35 +63,8 @@ public class Tier {
     /**
      * For the purposes of the calculation, the free days can just be considered 100% discounts.
      */
-    public void addFreeDays(Collection<DateRange> freeDays) {
+    public void addFreeDays(List<DateRange> freeDays) {
         discountList.add(new Discount(0, freeDays));
-    }
-
-    public void limitToDatesToQueryRange(DateRange queriedRange) {
-        // Limit the dates for the tiers and discounts to only withing the relevant range.
-        // Probably a bit overengineer-y, but helps  time complexity if things get big.
-        datesApplied = datesApplied.stream().filter(dateRange -> dateRange.hasOverlap(queriedRange))
-                .map(range -> range.getLimitedRange(queriedRange)).toList();
-        discountList = discountList.stream().filter(discount -> discount.hasOverlap(queriedRange))
-                .map(discount -> discount.getRangeLimitedDiscount(queriedRange))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets a chronological list of all cases where there is a change in the effective price.
-     */
-    public List<Long> keyDateList() {
-        var dates = getKeyDatesList(datesApplied);
-        dates.addAll(discountList.stream().flatMap(discount -> discount.keyDates().stream()).toList());
-        return dates.stream().sorted().distinct().toList();
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public List<DateRange> getDatesApplied() {
@@ -106,7 +75,7 @@ public class Tier {
         return price;
     }
 
-    public Boolean getAppliesOnWeekends() {
+    public boolean getAppliesOnWeekends() {
         return appliesOnWeekends;
     }
 
