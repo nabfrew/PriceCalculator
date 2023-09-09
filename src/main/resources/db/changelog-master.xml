@@ -12,10 +12,4 @@
 
     <!-- Create Discount Table -->
     <include file="changelog/003-create-discount-table.xml" relativeToChangelogFile="true"/>
-
-    <!-- Create FreeDays Table -->
-    <include file="changelog/004-create-free_days-table.xml" relativeToChangelogFile="true"/>
-
-    <!-- Create DateRange Table -->
-    <include file="changelog/005-create-date_range-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

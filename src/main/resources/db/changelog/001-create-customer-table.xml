@@ -6,9 +6,10 @@
 
     <changeSet id="create-customer-table" author="author">
         <createTable tableName="customer">
-            <column name="customer_id" type="SERIAL">
+            <column name="customer_id" type="VARCHAR(255)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="free_days" type="int8multirange"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

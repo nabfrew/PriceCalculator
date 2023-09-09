@@ -142,10 +142,6 @@
             <artifactId>micronaut-inject</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>io.micronaut.data</groupId>
-            <artifactId>micronaut-data-hibernate-jpa</artifactId>
-        </dependency>
 
         <!-- Micronaut Data dependencies -->
         <dependency>
@@ -156,6 +152,12 @@
         <dependency>
             <groupId>io.micronaut.data</groupId>
             <artifactId>micronaut-data-jpa</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.data</groupId>
+            <artifactId>micronaut-data-hibernate-jpa</artifactId>
+            <version>4.1.2</version>
         </dependency>
     </dependencies>
     <build>

@@ -9,11 +9,12 @@
             <column name="tier_id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="customer_id" type="INT">
+            <column name="customer_id" type="VARCHAR(255)">
                 <constraints foreignKeyName="fk_tier_customer" references="customer(customer_id)"/>
             </column>
             <column name="price" type="DOUBLE PRECISION"/>
             <column name="applies_on_weekends" type="BOOLEAN"/>
+            <column name="date_ranges" type="int8multirange"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

@@ -1,7 +1,6 @@
 package com.demo.controllers;
 
-import com.demo.calculator.Calculator;
-import com.demo.data.PriceCalculatorRepository;
+import com.demo.data.CustomerRepository;
 import com.demo.dto.PriceResponse;
 import com.demo.model.DateRange;
 import io.micronaut.http.annotation.Get;
@@ -18,10 +17,10 @@ import static io.micronaut.http.MediaType.APPLICATION_JSON;
 @io.micronaut.http.annotation.Controller("/calculate")
 public class Controller {
 
-    private final PriceCalculatorRepository repository;
+    private final CustomerRepository repository;
 
     @Inject
-    public Controller(PriceCalculatorRepository repository) {
+    public Controller(CustomerRepository repository) {
         this.repository = repository;
     }
 
@@ -34,8 +33,22 @@ public class Controller {
         } catch (DateTimeParseException ex) {
             throw new DateTimeException("Expected date format is ISO_LOCAL_DATE");
         }
-        var tiers = repository.getTiersByCustomerId(customerId);
 
-        return new PriceResponse(Calculator.price(tiers, queryDateRange));
+        try {
+            var customer = repository.getById(customerId);
+        } catch (Exception exception) {
+            // ignore
+        }
+
+        //if (true) {//customer == null) {
+            return new PriceResponse(0);
+        //}
+
+
+        //customer.applyFreeDays();
+
+        //var price = Calculator.price(customer.getTiers(), queryDateRange);
+
+        //return new PriceResponse(Calculator.price(customer.getTiers(), queryDateRange));
     }
 }

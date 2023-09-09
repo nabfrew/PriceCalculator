@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.demo.calculator.Calculator.calculateTierPrice;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorTest {
@@ -40,8 +42,8 @@ class CalculatorTest {
         var tierC = new Tier(TIER_C_PRICE, List.of(tierDates), List.of(discountC), true);
 
         // Check that the tiers are calculated correctly individually.
-        assertEquals(1.6, tierA.calculateTotalPrice(querieDateRange), 1e-4);
-        assertEquals(4.56, tierC.calculateTotalPrice(querieDateRange), 1e-4);
+        assertEquals(1.6, calculateTierPrice(tierA, querieDateRange), 1e-4); // Arbitrary good-enough delta.
+        assertEquals(4.56, calculateTierPrice(tierC, querieDateRange), 1e-4);
 
         // Check that final result is correct.
         var price = Calculator.price(List.of(tierA, tierC), querieDateRange);
@@ -83,11 +85,120 @@ class CalculatorTest {
         var tierC = new Tier(TIER_C_PRICE, List.of(new DateRange(startDate, null)), discountList, true);
 
         // Check that the tiers are calculated correctly individually.
-        assertEquals(expectedTierB, tierB.calculateTotalPrice(querieDateRange), 1e-4, String.format("%s\t", expectedTierB - tierB.calculateTotalPrice(querieDateRange) ));
-        assertEquals(expectedTierC, tierC.calculateTotalPrice(querieDateRange), 1e-4, String.format("%s\t", expectedTierC - tierC.calculateTotalPrice(querieDateRange) ));
+        assertEquals(expectedTierB, calculateTierPrice(tierB, querieDateRange), 1e-4, String.format("%s\t", expectedTierB - calculateTierPrice(tierB, querieDateRange) ));
+        assertEquals(expectedTierC, calculateTierPrice(tierC, querieDateRange), 1e-4, String.format("%s\t", expectedTierC - calculateTierPrice(tierC, querieDateRange) ));
 
         // Check that final result is correct.
         var price = Calculator.price(List.of(tierB, tierC), querieDateRange);
         assertEquals(expectedTierB + expectedTierC, price, 1e-4, String.format("%s", 161.392 -price));
+    }
+
+    @Test
+    void testSingleDateRangeFullyWithinQuery() {
+        var numberOfDays = 5;
+        var pricePerDay = 10;
+        var querieDateRange = createDateRange(100);
+
+        var datesApplied = List.of(createDateRange(numberOfDays));
+        var tier = new Tier(pricePerDay, datesApplied, new ArrayList<>(), true);
+
+        assertEquals(numberOfDays * pricePerDay, calculateTierPrice(tier, querieDateRange));
+    }
+
+    @Test
+    void testSingleDateRangeAndDiscountFullyWithinQuery() {
+        var numberOfDays = 5;
+        var pricePerDay = 10;
+        var discountedDays = 2;
+        var discountRate = 0.5;
+        var querieDateRange = createDateRange(100);
+
+        var discount = new Discount(discountRate, List.of(createDateRange(discountedDays)));
+        var datesApplied  = List.of(createDateRange(numberOfDays));
+
+        var tier = new Tier(pricePerDay, datesApplied, List.of(discount), true);
+
+        var expectedPrice = (numberOfDays - discountedDays) * pricePerDay + discountedDays * pricePerDay * discountRate;
+
+        assertEquals(expectedPrice, calculateTierPrice(tier, querieDateRange));
+    }
+
+    @Test
+    void testAddFreeDays() {
+        var date1 = LocalDate.of(1, 1, 1);
+        var date2 = LocalDate.of(2, 1, 1);
+        var date3 = LocalDate.of(3, 1, 1);
+
+        var range1 = new DateRange(date1, date3);
+        var range2 = new DateRange(date1, date2); // free days.
+
+        // 50% discount on 2/day -> 1/day.
+        var tier = new Tier(2, range1, new Discount(0.5, range1), true);
+
+        tier.addFreeDays(List.of(range2));
+
+        // Checking the full range, but price should only apply in range after free days.
+        assertEquals(DAYS.between(date2, date3), calculateTierPrice(tier, range1));
+    }
+
+    /**
+     * Check there's no hidden bad time complexity that could come into play
+     * in unlikely worst-case scenario over long time periods with rapidly adapting pricing...
+     */
+    @Test
+    void testPerformance() {
+        testPerformance(false);
+        testPerformance(true);
+    }
+
+    private void testPerformance(boolean appliesOnWeekends) {
+        var nrOfDateRangesPerTier = 500;
+        var nrOfDiscountsPerTier = 500;
+        var nrOfRangesPerDiscount = 500;
+
+        var tier = generateTierWithLotsOfDiscounts(nrOfDiscountsPerTier, nrOfRangesPerDiscount, nrOfDateRangesPerTier, appliesOnWeekends);
+
+        var queryStartDate = LocalDate.of(1, 1, 1).plusDays(200);
+        var queryDateRange = new DateRange(queryStartDate, null);
+
+        // For a real production system I'd look into some better, automated, way of tracking the performance over time.
+        var time = System.currentTimeMillis();
+        var calculatedPrice = calculateTierPrice(tier, queryDateRange);
+        System.out.println("Time " +  (appliesOnWeekends ? "with" : "without") +  " weekends = " + ((double)(System.currentTimeMillis() - time))/1000);
+        System.out.println("price " +  (appliesOnWeekends ? "with" : "without") +  " weekends = " + (calculatedPrice));
+    }
+
+    private Tier generateTierWithLotsOfDiscounts(int nrOfDiscountsPerTier, int nrOfRangesPerDiscount, int nrOfRangesPerTier, boolean appliesOnWeekends) {
+        var discounts = new ArrayList<Discount>();
+
+        for (var j = 1; j <= 1 + nrOfDiscountsPerTier; j++) {
+            discounts.add(generateDiscount(j, nrOfRangesPerDiscount));
+        }
+        return new Tier(1, generateDateRanges(1, nrOfRangesPerTier, 1000), discounts, appliesOnWeekends);
+    }
+
+    private Discount generateDiscount(int j, int nrOfRanges) {
+        var dateRanges = generateDateRanges(j, nrOfRanges, 1);
+        return new Discount(0.99, dateRanges);
+    }
+
+    private static ArrayList<DateRange> generateDateRanges(int j, int nrOfRanges, int years) {
+        var dateRanges = new ArrayList<DateRange>();
+
+        for (var k = j; k < j + nrOfRanges; k++) {
+            dateRanges.add(new DateRange(LocalDate.of(1, 1, 1).plusDays(k), LocalDate.of(years, 1, 1).plusDays(k)));
+        }
+        return dateRanges;
+    }
+
+    /**
+     * Convenience methods for test.
+     */
+    private static DateRange createDateRange(int numberOfDays) {
+        return createDateRange(LocalDate.of(1,1,1), numberOfDays);
+    }
+
+    private static DateRange createDateRange(LocalDate start, int numberOfDays) {
+        return new DateRange(start, start.plusDays(numberOfDays - 1)); // -1 because date ranges are inclusive on both ends.
     }
 }

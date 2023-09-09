@@ -5,7 +5,11 @@ GET [base-url]/calculate?customerId=[customerId]&startDate=[yyyy/mm/dd]&endDate=
 
 ## WIP:
 The actual price calculation seems pretty solid, based on my testing.
-I was going to try some new database, cassandra, but decided it wasn't a great choice for this use, and reverted to what I know a bit better, postgres.
+
+Using this as an opportunity to tinker with the latest and greatest versions and new frameworks.
+
+I was going to try some new database, cassandra, but decided it wasn't a great choice for this use, 
+and reverted to what I know a bit better, postgres, but the latest with shiny new 'multirange' type.
 
 ### todo
 - Check that the schema makes sense.
