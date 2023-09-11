@@ -71,10 +71,10 @@ public class Calculator {
             return;
         }
 
-        addToTimeline(queriedRange, resultTimeline, start, end, value, operation);
+        addToTimeline(resultTimeline, start, end, value, operation);
     }
 
-    private static void addToTimeline(DateRange queriedRange, TreeMap<Long, Double> resultTimeline, long start, long end, Double value, Calculation calculation) {
+    private static void addToTimeline(TreeMap<Long, Double> resultTimeline, long start, long end, Double value, Calculation calculation) {
         // Set the start date
         var existingPrice = 0.0;
         var existingPriceEntry = resultTimeline.floorEntry(start);
@@ -83,9 +83,7 @@ public class Calculator {
         }
         var newPrice = calculation.newPrice(existingPrice, value);
 
-        if (start >= queriedRange.start()) {
-            resultTimeline.put(start, newPrice);
-        }
+        resultTimeline.put(start, newPrice);
 
         // Update all the dates within the range.
         for (var dateToUpdate : resultTimeline.subMap(start, false, end, false).entrySet()) {

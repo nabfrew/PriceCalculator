@@ -4,6 +4,7 @@ import com.demo.model.DateRange;
 import com.demo.model.Discount;
 import com.demo.model.Tier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ class CalculatorTest {
         var discountC = new Discount(0.8, List.of(discountedDates));
 
         var tierA = new Tier(TIER_A_PRICE, List.of(tierDates), new ArrayList<>(), false);
-        var tierC = new Tier(TIER_C_PRICE, List.of(tierDates), List.of(discountC), true);
+        var tierC = new Tier(TIER_C_PRICE, tierDates, discountC, true);
 
         // Check that the tiers are calculated correctly individually.
         assertEquals(1.6, calculateTierPrice(tierA, querieDateRange), 1e-4); // Arbitrary good-enough delta.
@@ -146,6 +147,7 @@ class CalculatorTest {
      * in unlikely worst-case scenario over long time periods with rapidly adapting pricing...
      */
     @Test
+    @Timeout(1) // 1 second, quite generous.
     void testPerformance() {
         testPerformance(false);
         testPerformance(true);
