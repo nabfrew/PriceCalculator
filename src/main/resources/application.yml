@@ -1,0 +1,23 @@
+micronaut:
+    application:
+        name: PriceCalculator
+
+datasources:
+    default:
+        db-type: postgres
+        dialect: POSTGRES
+        schema-generate: CREATE_DROP
+
+jpa:
+    default:
+        entity-scan:
+            packages: com.demo
+
+liquibase:
+    datasources:
+        default:
+            enabled: true
+
+logging:
+    level:
+        io.micronaut: DEBUG

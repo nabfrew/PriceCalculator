@@ -2,6 +2,8 @@ package com.demo.model;
 
 
 import io.micronaut.data.annotation.GeneratedValue;
+
+import io.micronaut.data.annotation.MappedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -16,11 +18,15 @@ import java.util.List;
 @Table(name = "customer")
 public class Customer {
     @Id
-    @GeneratedValue
+    @GeneratedValue(GeneratedValue.Type.AUTO)
     String id;
 
     @OneToMany(mappedBy = "customer")
     List<Tier> tiers;
+
+    public List<DateRange> getFreeDays() {
+        return freeDays;
+    }
 
     @Convert(converter = DateRangeListConverter.class)
     @Column(name = "free_days", columnDefinition = "int8range")

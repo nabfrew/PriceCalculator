@@ -1,10 +1,13 @@
 package com.demo.model;
 
+import io.micronaut.data.annotation.GeneratedValue;
+
+import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.sql.JoinColumn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -13,6 +16,10 @@ import java.util.List;
 @Entity
 @Table(name = "discount")
 public class Discount {
+
+    @Id
+    @GeneratedValue(GeneratedValue.Type.AUTO)
+    private Long id;
     @Column(name = "discount_rate")
     private Double discountRate;
 
@@ -24,8 +31,6 @@ public class Discount {
     @JoinColumn(name = "tier_id")
     private Tier tier;
 
-    @Id
-    private Long id;
 
     public Discount(double discountRate, List<DateRange> datesApplied) {
         this.discountRate = discountRate;

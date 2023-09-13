@@ -1,11 +1,13 @@
 package com.demo.model;
 
 import io.micronaut.data.annotation.GeneratedValue;
+
+import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.data.annotation.sql.JoinColumn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -39,11 +41,11 @@ public class Tier {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    public Tier(double price, List<DateRange> datesApplied, List<Discount> discountsApplied, boolean appliesWeekends) {
+    public Tier(double price, List<DateRange> datesApplied, List<Discount> discountList, boolean appliesOnWeekends) {
         this.price = price;
         this.datesApplied = datesApplied;
-        this.discountList = discountsApplied;
-        this.appliesOnWeekends = appliesWeekends;
+        this.discountList = discountList;
+        this.appliesOnWeekends = appliesOnWeekends;
     }
 
     public Tier(double price, DateRange datesApplied, Discount discountApplied, boolean appliesWeekends) {

@@ -3,6 +3,8 @@
 To get the price:
 GET [base-url]/calculate?customerId=[customerId]&startDate=[yyyy/mm/dd]&endDate=[yyyy/mm/dd]
 
+Be sure to use the included maven wrapper (mvnw) and have docker installed - micronaut test resources docker for testcontainers.
+
 ## WIP:
 The actual price calculation seems pretty solid, based on my testing.
 
