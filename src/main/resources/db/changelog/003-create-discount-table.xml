@@ -13,7 +13,9 @@
                 <constraints foreignKeyName="fk_discount_tier" references="tier(tier_id)"/>
             </column>
             <column name="discount_rate" type="DOUBLE PRECISION"/>
-            <column name="date_ranges" type="int8multirange"/>
+            <column name="date_ranges" type="int8multirange">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

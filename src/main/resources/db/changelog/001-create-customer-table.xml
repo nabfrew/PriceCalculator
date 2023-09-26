@@ -9,7 +9,9 @@
             <column name="customer_id" type="VARCHAR(255)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="free_days" type="int8multirange"/>
+            <column name="free_days" type="int8multirange">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

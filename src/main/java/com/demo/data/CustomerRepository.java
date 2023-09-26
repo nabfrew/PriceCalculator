@@ -1,13 +1,18 @@
 package com.demo.data;
 
 import com.demo.model.Customer;
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import com.demo.model.DateRange;
+import com.demo.model.Tier;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@JdbcRepository(dialect = Dialect.POSTGRES)
-public interface CustomerRepository extends CrudRepository<Customer, String> {
-    Customer getById(String customerId);
+import java.util.List;
+import java.util.Optional;
 
-    Customer save(Customer customer);
+public interface CustomerRepository {
+    Optional<Customer> findById(String customerId);
+
+    void save(Customer customer);
+
+    Customer save(@NotNull @NotBlank List<Tier> tiers, List<DateRange> freeDays);
 }

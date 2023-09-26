@@ -14,7 +14,9 @@
             </column>
             <column name="price" type="DOUBLE PRECISION"/>
             <column name="applies_on_weekends" type="BOOLEAN"/>
-            <column name="date_ranges" type="int8multirange"/>
+            <column name="date_ranges" type="int8multirange">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

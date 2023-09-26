@@ -22,10 +22,9 @@ class PriceCalculatorRepositoryTest {
     void testCustomerRoundTrip() {
         var discount = new Discount(0.5, 1,2);
         var tier = new Tier(1, new DateRange(1,4), discount, true);
-        var customer = new Customer(List.of(tier), List.of(new DateRange(1,1)));
-        repository.save(customer);
 
-        var dbCustomer = repository.getById(customer.getId());
+        var dbCustomer = repository.save(List.of(tier), List.of(new DateRange(1,1)));
+        var customer = new Customer(dbCustomer.getId(), List.of(tier), List.of(new DateRange(1, 1)));
 
         assertEquals(customer, dbCustomer);
     }

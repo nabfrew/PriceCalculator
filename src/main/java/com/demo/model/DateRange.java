@@ -1,9 +1,12 @@
 package com.demo.model;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Serdeable
 public final class DateRange {
     private final long start;
     private final long end;
@@ -26,10 +29,6 @@ public final class DateRange {
         this.start = start.toEpochDay();
         this.end = end.toEpochDay();
         this.startWeekday = start.getDayOfWeek().getValue();
-    }
-
-    boolean hasOverlap(DateRange otherRange) {
-        return otherRange.start <= end && otherRange.end >= start;
     }
 
     public long getDays() {
@@ -63,7 +62,9 @@ public final class DateRange {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DateRange dateRange = (DateRange) o;
         return Objects.equals(start, dateRange.start) && Objects.equals(end, dateRange.end);
     }

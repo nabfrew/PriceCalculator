@@ -1,34 +1,44 @@
 package com.demo.model;
 
-import io.micronaut.data.annotation.GeneratedValue;
-
-import io.micronaut.data.annotation.MappedEntity;
-import io.micronaut.data.annotation.sql.JoinColumn;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.micronaut.serde.annotation.Serdeable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
+import static jakarta.persistence.GenerationType.AUTO;
+import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
+
+@Serdeable
 @Entity
 @Table(name = "discount")
 public class Discount {
 
     @Id
-    @GeneratedValue(GeneratedValue.Type.AUTO)
+    @GeneratedValue(strategy = AUTO)
     private Long id;
+
     @Column(name = "discount_rate")
     private Double discountRate;
 
     @Convert(converter = DateRangeListConverter.class)
     @Column(name = "date_ranges", columnDefinition = "int8range")
+    @NotNull
     private List<DateRange> datesApplied;
 
     @ManyToOne
     @JoinColumn(name = "tier_id")
+    @JsonIgnore
     private Tier tier;
 
 
@@ -50,6 +60,7 @@ public class Discount {
     }
     public Discount() {
         discountRate = 1.0;
+        datesApplied = List.of();
     }
 
     public List<DateRange> getDatesApplied() {
@@ -60,4 +71,18 @@ public class Discount {
         return discountRate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Discount otherDiscount)) {
+            return false;
+        }
+        return id.equals(otherDiscount.id)
+                && discountRate.equals(otherDiscount.discountRate)
+                 && isEqualCollection(datesApplied, otherDiscount.datesApplied);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, discountRate, datesApplied.size(), new HashSet<>(datesApplied));
+    }
 }
